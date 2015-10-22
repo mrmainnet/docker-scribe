@@ -25,9 +25,10 @@ RUN apk add --update \
     && make \
     && make install \
     && cd /thrift/contrib/fb303 \
+    && sed -i Makefile.am 's:AM_CPPFLAGS += -I$(thrift_home)/include/thrift:AM_CPPFLAGS += -I$(thrift_home)/include:' \
     && ./bootstrap.sh \
     && ./configure \
-      --without-java --without-php \
+      --without-java --without-php --without-python \
     && make \
     && make install \
     && cd / \
