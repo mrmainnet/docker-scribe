@@ -2,7 +2,7 @@ FROM 1science/alpine:3.1
 
 MAINTAINER Stas Alekseev <stas.alekseev@gmail.com>
 
-ENV THRIFT_VERSION 0.9.1
+ENV THRIFT_VERSION 0.9.3
 
 # Install thrift, fb303
 RUN apk add --update \
@@ -68,12 +68,9 @@ RUN apk add --update \
 	  py-gdbm \
 	  python-dev \
 	  sqlite-libs \
-	  tar \
-	  gzip \
 	  zlib-dev \
 	  zlib-doc \
-	&& curl -sSL "https://archive.apache.org/dist/thrift/$THRIFT_VERSION/thrift-$THRIFT_VERSION.tar.gz" \
-	  | tar -v -C / -xz \
+	&& git clone -b $THRIFT_VERSION https://git.apache.org/thrift.git \
     && cd /thrift \
     && ./bootstrap.sh \
     && ./configure \
@@ -92,7 +89,7 @@ RUN apk add --update \
 	&& make distclean \
     && cd / \
     && rm -rf /thrift \
-	&& (find /usr/local -type f -print | xargs file | grep 'not stripped' | cut -d: -f1 | xargs -r strip --strip-unneeded) \
+	&& find /usr/local -type f -print | xargs file | grep 'not stripped' | cut -d: -f1 | xargs -r strip --strip-unneeded \
     && apk del \
 	  autoconf \
 	  automake \
@@ -146,8 +143,6 @@ RUN apk add --update \
 	  py-gdbm \
 	  python-dev \
 	  sqlite-libs \
-	  tar \
-	  gzip \
 	  zlib-dev \
 	  zlib-doc \
     && rm -rf /var/cache/apk/*
@@ -209,9 +204,9 @@ RUN apk add --update \
 	  python-dev \
 	  zlib-dev \
 	  zlib-doc \
-    && git clone https://github.com/facebook/scribe.git \
+    && git clone https://github.com/InMobi/scribe.git \
     && cd /scribe \
-	&& sed -i 's|AM_INIT_AUTOMAKE([foreign -Wall])|#AM_INIT_AUTOMAKE([foreign -Wall])|' configure.ac \
+	&& sed -i 's|AM_INIT_AUTOMAKE|# AM_INIT_AUTOMAKE|' configure.ac \
     && ./bootstrap.sh \
       --with-boost-system=boost_system --with-boost-filesystem=boost_filesystem --disable-static \
     && make \
