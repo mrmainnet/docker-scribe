@@ -2,72 +2,280 @@ FROM 1science/alpine:3.1
 
 MAINTAINER Stas Alekseev <stas.alekseev@gmail.com>
 
+ENV THRIFT_VERSION 0.9.1
+
+# Install thrift, fb303
 RUN apk add --update \
-      file \
-      boost-dev \
-      git \
-      gcc \
-      g++ \
-      make \
-      expat \
-      libtool \
-      automake \
-      autoconf \
-      openssl-dev \
-      libevent-dev \
-      bison \
-      flex \
-    && git clone -b 0.9.3 https://github.com/apache/thrift.git \
+	  autoconf \
+	  automake \
+	  binutils \
+	  binutils-libs \
+	  bison \
+	  boost \
+	  boost-date_time \
+	  boost-dev \
+	  boost-doc \
+	  boost-filesystem \
+	  boost-graph \
+	  boost-iostreams \
+	  boost-math \
+	  boost-prg_exec_monitor \
+	  boost-program_options \
+	  boost-python \
+	  boost-random \
+	  boost-regex \
+	  boost-serialization \
+	  boost-signals \
+	  boost-system \
+	  boost-thread \
+	  boost-unit_test_framework \
+	  boost-wave \
+	  boost-wserialization \
+	  expat \
+	  file \
+	  flex \
+	  g++ \
+	  gcc \
+	  gdbm \
+	  git \
+	  gmp5 \
+	  libbz2 \
+	  libc-dev \
+	  libevent \
+	  libevent-dev \
+	  libffi \
+	  libgcc \
+	  libgomp \
+	  libltdl \
+	  libstdc++ \
+	  libtool \
+	  linux-headers \
+	  m4 \
+	  make \
+	  mpc1 \
+	  mpfr3 \
+	  musl-dbg \
+	  musl-dev \
+	  openssl-dev \
+	  openssl-doc \
+	  pcre \
+	  perl \
+	  pkgconf \
+	  pkgconfig \
+	  python \
+	  python-doc \
+	  python-tests \
+	  py-gdbm \
+	  python-dev \
+	  sqlite-libs \
+	  tar \
+	  gzip \
+	  zlib-dev \
+	  zlib-doc \
+	&& curl -sSL "https://archive.apache.org/dist/thrift/$THRIFT_VERSION/thrift-$THRIFT_VERSION.tar.gz" \
+	  | tar tar -v -C / -xz \
     && cd /thrift \
     && ./bootstrap.sh \
     && ./configure \
-      --with-java=no --with-erlang=no --with-php=no --with-perl=no --with-php_extension=no --with-ruby=no --with-haskell=no --with-go=no \
+      --without-tests --disable-static \
     && make \
     && make install \
     && cd /thrift/contrib/fb303 \
-    && sed -i Makefile.am 's:AM_CPPFLAGS += -I$(thrift_home)/include/thrift:AM_CPPFLAGS += -I$(thrift_home)/include:' \
+    && sed -i 's|$(thrift_home)/include/thrift|$(thrift_home)/include|' cpp/Makefile.am \
     && ./bootstrap.sh \
     && ./configure \
-      --without-java --without-php --without-python \
+      --without-java --without-php --without-python --disable-static \
     && make \
     && make install \
+	&& cd py \
+	&& python setup.py install \
+	&& make distclean \
     && cd / \
     && rm -rf /thrift \
+	&& (find /usr/local -type f -print | xargs file | grep 'not stripped' | cut -d: -f1 | xargs -r strip --strip-unneeded) \
+    && apk del \
+	  autoconf \
+	  automake \
+	  binutils \
+	  binutils-libs \
+	  bison \
+	  boost \
+	  boost-date_time \
+	  boost-dev \
+	  boost-doc \
+	  boost-graph \
+	  boost-iostreams \
+	  boost-math \
+	  boost-prg_exec_monitor \
+	  boost-program_options \
+	  boost-python \
+	  boost-random \
+	  boost-regex \
+	  boost-serialization \
+	  boost-signals \
+	  boost-thread \
+	  boost-unit_test_framework \
+	  boost-wave \
+	  boost-wserialization \
+	  file \
+	  flex \
+	  g++ \
+	  gcc \
+	  git \
+	  gmp5 \
+	  libc-dev \
+	  libevent-dev \
+	  libgomp \
+	  libltdl \
+	  libtool \
+	  linux-headers \
+	  m4 \
+	  make \
+	  mpc1 \
+	  mpfr3 \
+	  musl-dbg \
+	  musl-dev \
+	  openssl-dev \
+	  openssl-doc \
+	  pcre \
+	  perl \
+	  pkgconf \
+	  pkgconfig \
+	  python-doc \
+	  python-tests \
+	  py-gdbm \
+	  python-dev \
+	  sqlite-libs \
+	  tar \
+	  gzip \
+	  zlib-dev \
+	  zlib-doc \
+    && rm -rf /var/cache/apk/*
+
+RUN apk add --update \
+	  autoconf \
+	  automake \
+	  binutils \
+	  binutils-libs \
+	  bison \
+	  boost \
+	  boost-date_time \
+	  boost-dev \
+	  boost-doc \
+	  boost-filesystem \
+	  boost-graph \
+	  boost-iostreams \
+	  boost-math \
+	  boost-prg_exec_monitor \
+	  boost-program_options \
+	  boost-python \
+	  boost-random \
+	  boost-regex \
+	  boost-serialization \
+	  boost-signals \
+	  boost-system \
+	  boost-thread \
+	  boost-unit_test_framework \
+	  boost-wave \
+	  boost-wserialization \
+	  file \
+	  flex \
+	  g++ \
+	  gcc \
+	  git \
+	  gmp5 \
+	  libc-dev \
+	  libevent \
+	  libevent-dev \
+	  libgomp \
+	  libltdl \
+	  libtool \
+	  linux-headers \
+	  m4 \
+	  make \
+	  mpc1 \
+	  mpfr3 \
+	  musl-dbg \
+	  musl-dev \
+	  openssl-dev \
+	  openssl-doc \
+	  pcre \
+	  perl \
+	  pkgconf \
+	  pkgconfig \
+	  python-doc \
+	  python-tests \
+	  py-gdbm \
+	  python-dev \
+	  zlib-dev \
+	  zlib-doc \
     && git clone https://github.com/facebook/scribe.git \
     && cd /scribe \
+	&& sed -i 's|AM_INIT_AUTOMAKE([foreign -Wall])|#AM_INIT_AUTOMAKE([foreign -Wall])|' configure.ac \
     && ./bootstrap.sh \
-    && ./configure \
-      CPPFLAGS="-DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H -DBOOST_FILESYSTEM_VERSION=2" LIBS="-lboost_system -lboost_filesystem" \
+      --with-boost-system=boost_system --with-boost-filesystem=boost_filesystem --disable-static \
     && make \
     && make install \
+	&& cd lib/py \
+	&& python setup.py install \
+	&& make distclean \
     && cd / \
     && rm -rf /scribe \
-    && apk remove \
-      file \
-      boost-dev \
-      boost-doc \
-      git \
-      gcc \
-      g++ \
-      make \
-      expat \
-      libtool \
-      automake \
-      autoconf \
-      openssl-doc \
-      openssl-dev \
-      perl \
-      m4 \
-      musl-dbg \
-      musl-dev \
-      libc-dev \
-      linux-headers \
-      binutils \
-      libevent-dev \
-      bison \
-      flex \
-      zlib-doc \
-      zlib-dev \
+	&& (find /usr/local -type f -print | xargs file | grep 'not stripped' | cut -d: -f1 | xargs -r strip --strip-unneeded) \
+    && apk del \
+	  autoconf \
+	  automake \
+	  binutils \
+	  binutils-libs \
+	  bison \
+	  boost \
+	  boost-date_time \
+	  boost-dev \
+	  boost-doc \
+	  boost-graph \
+	  boost-iostreams \
+	  boost-math \
+	  boost-prg_exec_monitor \
+	  boost-program_options \
+	  boost-python \
+	  boost-random \
+	  boost-regex \
+	  boost-serialization \
+	  boost-signals \
+	  boost-thread \
+	  boost-unit_test_framework \
+	  boost-wave \
+	  boost-wserialization \
+	  file \
+	  flex \
+	  g++ \
+	  gcc \
+	  git \
+	  gmp5 \
+	  libc-dev \
+	  libevent-dev \
+	  libgomp \
+	  libltdl \
+	  libtool \
+	  linux-headers \
+	  m4 \
+	  make \
+	  mpc1 \
+	  mpfr3 \
+	  musl-dbg \
+	  musl-dev \
+	  openssl-dev \
+	  openssl-doc \
+	  pcre \
+	  perl \
+	  pkgconf \
+	  pkgconfig \
+	  python-doc \
+	  python-tests \
+	  py-gdbm \
+	  python-dev \
+	  zlib-dev \
+	  zlib-doc \
     && rm -rf /var/cache/apk/*
 
 CMD ["/bin/bash"]
