@@ -73,7 +73,7 @@ RUN apk add --update \
 	  zlib-dev \
 	  zlib-doc \
 	&& curl -sSL "https://archive.apache.org/dist/thrift/$THRIFT_VERSION/thrift-$THRIFT_VERSION.tar.gz" \
-	  | tar tar -v -C / -xz \
+	  | tar -v -C / -xz \
     && cd /thrift \
     && ./bootstrap.sh \
     && ./configure \
