@@ -2,10 +2,9 @@ FROM oraclelinux:6.7
 
 MAINTAINER Chris Ulrich <culrich@athenahealth.com>
 
-COPY rpms/ /
+COPY rpms /rpms
 
-RUN yum --assumeyes clean all \
-    && yum -y install /rpms/*.rpm \
+RUN yum --assumeyes install /rpms/*.rpm \
     && mkdir -p /var/spool/scribed \
     && yum --assumeyes clean all \
     && rm -f /var/cache/yum/*
