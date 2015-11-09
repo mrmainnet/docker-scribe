@@ -7,7 +7,7 @@ COPY rpms /rpms
 RUN yum --assumeyes install /rpms/*.rpm \
     && mkdir -p /var/spool/scribed \
     && yum --assumeyes clean all \
-    && rm -f /var/cache/yum/*
+    && rm -rf /var/cache/yum/*
 
 COPY scribe.conf /etc/scribed/scribed.conf
 
