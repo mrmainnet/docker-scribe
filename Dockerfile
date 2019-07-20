@@ -9,6 +9,8 @@ RUN yum --assumeyes install /rpms/*.rpm \
     && yum --assumeyes clean all \
     && rm -rf /var/cache/yum/*
 
+RUN ln -sf /usr/share/zoneinfo/Asia/Saigon /etc/localtime
+
 COPY scribe.conf /etc/scribed/scribed.conf
 
 VOLUME /etc/scribed
